@@ -7,6 +7,7 @@ from django.db.models import Sum
 
 
 class Author(models.Model):
+    """"Модель, содержащая объекты всех авторов"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     ratingAuthor = models.SmallIntegerField(default=0)
 
@@ -29,10 +30,16 @@ class Author(models.Model):
 
 
 class Category(models.Model):
+    """"Категории новостей/статей — темы, которые они отражают"""
     category_name = models.CharField(max_length=200, unique=True)
+
+    def __str__(self):
+        return f'{self.category_name}'
 
 
 class Post(models.Model):
+    """Эта модель должна содержать в себе статьи и новости, которые создают пользователи.
+     Каждый объект может иметь одну или несколько категорий."""
     arcticle = 'AR'
     news = 'NW'
 
@@ -59,14 +66,19 @@ class Post(models.Model):
     def preview(self):
         return self.post_text[0:123] + '...'
 
+    def __str__(self):
+        return f'{self.post_text[0:20]}...'
+
 
 
 class PostCategory(models.Model):
+    """Промежуточная модель для связи с моделью Post и Category"""
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class Comment(models.Model):
+    """Модель, содержащая комментарии по каждым постом/новостью"""
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment_text = models.TextField()
@@ -80,3 +92,6 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+    def __str__(self):
+        return f'{self.comment_text[0:20]}...'
