@@ -22,7 +22,5 @@ from news.views import BaseView, PostsList, PostDetail
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', BaseView.as_view()),
-    path('posts/', PostsList.as_view()),
-    path('<int:pk>', PostDetail.as_view()),
-
+    path('posts/', include('news.urls')),
 ]
