@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load custom_filters %}
 <!-- Название у нас будет Новости -->
 {% block title %}
 Новости
@@ -8,16 +9,18 @@
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
 <h1>Все новости</h1>
+<h3>{{ time_now|date:'M d Y' }}</h3>
 
 <div class="container">
          <div class="row", style="margin-top:50px;">
              {% for post in posts_list %}
              <div class="col-sm">
                  <div class="card border-secondary mb-3" style="max-width: 20rem;">
-                     <div class="card-header"> {{post.post_title}}</div>
+                     <div class="card-header"> {{post.post_title|Censor}}</div>
                      <div class="card-body">
                        <h4 class="card-title">{{post.authors}}</h4>
-                       <p class="card-text">{{post.post_text}} </p>
+                       <p class="card-text">{{post.post_text|truncatechars:20|Censor}} </p>
+                         <p class="card-text">{{post.post_pub_date}} </p>
                      </div>
                    </div>
              </div>
