@@ -1,17 +1,19 @@
-<!--  наследуемся от шаблона base.html -->
 {% extends 'base.html' %}
 
 {% load custom_filters %}
 
 {% block title %}
-News
+Удалить
 {% endblock title %}
 
 {% block content %}
+<h2>Вы действительно хотите удалить данный пост?</h2>
 <h1>Название - {{ post.post_title| Censor }}</h1>
 <p>Текст - {{ post.post_text | Censor}}</p>
 <p>Автор - {{ post.authors }}</p>
-<p>Рейтинг - {{ post.rating }}</p>
 <p>Дата загрузки - {{ post.post_pub_date }}</p>
 
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
 {% endblock content %}

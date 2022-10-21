@@ -51,8 +51,8 @@ class Post(models.Model):
     post_type = models.CharField(max_length=2, choices=POSITIONS, default=arcticle)
     post_pub_date = models.DateTimeField(auto_now_add=True)
     post_categories = models.ManyToManyField(Category, through='PostCategory')
-    post_title = models.CharField('Название статьи', max_length=200)
-    post_text = models.TextField('Текст статьи')
+    post_title = models.CharField('Название', max_length=200)
+    post_text = models.TextField('Текст')
     rating = models.SmallIntegerField(default=0)
 
     def like(self):
@@ -67,7 +67,7 @@ class Post(models.Model):
         return self.post_text[0:123] + '...'
 
     def __str__(self):
-        return f'{self.post_text[0:20]}...'
+        return f'{self.post_text[0:1200]}'
 
 
 

@@ -10,22 +10,53 @@
 {% block content %}
 <h1>Все новости</h1>
 <h3>{{ time_now|date:'M d Y' }}</h3>
+  {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Найти" />
+   </form>
+
+   <hr>
 
 <div class="container">
          <div class="row", style="margin-top:50px;">
              {% for post in posts_list %}
              <div class="col-sm">
                  <div class="card border-secondary mb-3" style="max-width: 20rem;">
-                     <div class="card-header"> {{post.post_title|Censor}}</div>
+                     <h4 class="card-header">{{post.post_title|Censor}}</h4>
                      <div class="card-body">
-                       <h4 class="card-title">{{post.authors}}</h4>
-                       <p class="card-text">{{post.post_text|truncatechars:20|Censor}} </p>
-                         <p class="card-text">{{post.post_pub_date}} </p>
+                       <div class="card-title">Автор: {{post.authors}}</div>
+                       <p class="card-text">{{post.post_text|truncatechars:1200|Censor}} </p>
+                         <p class="card-text">Дата публикации: {{post.post_pub_date}} </p>
                      </div>
                    </div>
              </div>
              {% endfor %}
          </div>
      </div>
+{# Добавляем пагинацию на страницу #}
+
+   {# Информация о предыдущих страницах #}
+   {% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
 
 {% endblock content %}
