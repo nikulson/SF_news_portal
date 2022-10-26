@@ -8,7 +8,9 @@ from .models import Post, Author, Category, User
 from datetime import datetime
 from .filters import PostFilter
 from .forms import PostForm
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
 
@@ -123,3 +125,9 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
         return Post.objects.get(pk=id)
+
+
+
+@method_decorator(login_required, name='dispatch')
+class ProtectedView(TemplateView):
+    template_name = 'protected_page.html'
