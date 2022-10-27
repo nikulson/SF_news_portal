@@ -131,3 +131,4 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
 @method_decorator(login_required, name='dispatch')
 class ProtectedView(TemplateView):
     template_name = 'protected_page.html'
+

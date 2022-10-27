@@ -32,6 +32,7 @@ class Author(models.Model):
 class Category(models.Model):
     """"Категории новостей/статей — темы, которые они отражают"""
     category_name = models.CharField(max_length=200, unique=True)
+    subscribers = models.ManyToManyField(User, max_length=64, blank=True, null=True)
 
     def __str__(self):
         return f'{self.category_name}'
@@ -65,6 +66,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.post_text[0:123] + '...'
+
+    def get_absolute_url(self):
+        return f'/news/{self.id}'
 
     def __str__(self):
         return f'{self.post_text[0:1200]}'
