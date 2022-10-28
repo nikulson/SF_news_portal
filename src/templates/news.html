@@ -1,0 +1,22 @@
+<!--  наследуемся от шаблона base.html -->
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+<p>{{ post.id}}</p>
+<h1>{{ post.title| Censor }}</h1>
+<p>{{ post.body | Censor}}</p>
+<p>Автор - {{ post.authors }}</p>
+<p>Категория - {{ post.category }}</p>
+<p>Рейтинг - {{ post.rating }}</p>
+<p>Дата загрузки - {{ post.created_at }}</p>
+<td>
+    <a class="nav-link" href="subscribe/">Оформить подписку на подобные новости </a>
+</td>
+
+{% endblock content %}
