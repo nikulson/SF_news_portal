@@ -145,4 +145,41 @@ def del_subscribe(request, **kwargs):
     return redirect('/news_list/')
 
 
+def send_mail_for_subscribers(instance):
+    print('Представления - начало')
+    print()
+    print('====================ПРОВЕРКА СИГНАЛОВ===========================')
+    print()
+    print('задача - отправка письма подписчикам при добавлении новой статьи')
+
+    sub_text = instance.text
+
+    category = Category.objects.get(pk=Post.objects.get(pk=instance.pk).category.pk)
+    print()
+    print('category:', category)
+    print()
+    subscribers = category.subscribers.all()
+
+    print('Адреса рассылки:')
+    for pos in subscribers:
+        print(pos.email)
+
+    print()
+    print()
+    print()
+    for subscriber in subscribers:
+
+        print('**********************', subscriber.email, '**********************')
+        print(subscriber)
+        print('Адресат:', subscriber.email)
+
+        html_content = render_to_string(
+            'mail.html', {'user': subscriber, 'text': sub_text[:50], 'post': instance})
+
+
+        print()
+        print(html_content)
+        print()
+
+    return redirect('/news_list/')
 
