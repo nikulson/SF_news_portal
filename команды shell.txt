@@ -24,13 +24,13 @@ python manage.py shell
 <Author: Петр>
 
 Создаем категории:
->>> Category.objects.create(category_name='спорт')
+>>> Category.objects.create(name='спорт')
 <Category: Category object (5)>
->>> Category.objects.create(category_name='экономика')  
+>>> Category.objects.create(name='экономика')
 <Category: Category object (6)>
->>> Category.objects.create(category_name='политика')  
+>>> Category.objects.create(name='политика')
 <Category: Category object (7)>
->>> Category.objects.create(category_name='IT-технологии')
+>>> Category.objects.create(name='IT-технологии')
 <Category: Category object (8)>
 
 Получаем автора по id:
@@ -43,33 +43,33 @@ python manage.py shell
 
 
 Создаем пост:
->>> Post.objects.create(authors=author, post_type='NW', post_title='какой-то заголовок', post_text='какой-то текст')
+>>> Post.objects.create(authors=author, type='NW', title='какой-то заголовок', body='какой-то текст')
 <Post: Post object (4)>
->>> Post.objects.get(id=4).post_title
+>>> Post.objects.get(id=4).title
 'какой-то заголовок'
->>> Post.objects.create(authors=author2, post_type='AR', post_title='футбол', post_text='Зенит снова чемпион!')       
+>>> Post.objects.create(authors=author2, type='AR', title='футбол', body='Зенит снова чемпион!')
 <Post: Post object (5)>
->>> Post.objects.create(authors=author2, post_type='AR', post_title='Пайтон', post_text='Пайтон - один из самых популярных языков программирования')  
+>>> Post.objects.create(authors=author2, type='AR', title='Пайтон', body='Пайтон - один из самых популярных языков программирования')
 <Post: Post object (6)>
 
 присваиваем категории:
->>> Post.objects.get(id=4).post_categories.add(Category.objects.get(id=6))
->>> Post.objects.get(id=5).post_categories.add(Category.objects.get(id=5))
->>> Post.objects.get(id=6).post_categories.add(Category.objects.get(id=7))
->>> Post.objects.get(id=4).post_categories.add(Category.objects.get(id=5))                                                  
->>> Post.objects.get(id=5).post_categories.add(Category.objects.get(id=6)) 
->>> Post.objects.get(id=6).post_categories.add(Category.objects.get(id=7))
+>>> Post.objects.get(id=4).category.add(Category.objects.get(id=6))
+>>> Post.objects.get(id=5).category.add(Category.objects.get(id=5))
+>>> Post.objects.get(id=6).category.add(Category.objects.get(id=7))
+>>> Post.objects.get(id=4).category.add(Category.objects.get(id=5))
+>>> Post.objects.get(id=5).category.add(Category.objects.get(id=6))
+>>> Post.objects.get(id=6).category.add(Category.objects.get(id=7))
 
 создаем комментарии:
->>> Comment.objects.create(post=Post.objects.get(id=4), user=Author.objects.get(id=3).user, comment_text='классная новость')
+>>> Comment.objects.create(post=Post.objects.get(id=4), user=Author.objects.get(id=3).user, text='классная новость')
 <Comment: Comment object (6)>
->>> Comment.objects.create(post=Post.objects.get(id=4), user=Author.objects.get(id=4).user, comment_text='Вау')
+>>> Comment.objects.create(post=Post.objects.get(id=4), user=Author.objects.get(id=4).user, text='Вау')
 <Comment: Comment object (7)>
->>> Comment.objects.create(post=Post.objects.get(id=5), user=Author.objects.get(id=3).user, comment_text='Зенит - чемпион!')
+>>> Comment.objects.create(post=Post.objects.get(id=5), user=Author.objects.get(id=3).user, text='Зенит - чемпион!')
 <Comment: Comment object (8)>
->>> Comment.objects.create(post=Post.objects.get(id=6), user=Author.objects.get(id=4).user, comment_text='Привет, мир')
+>>> Comment.objects.create(post=Post.objects.get(id=6), user=Author.objects.get(id=4).user, text='Привет, мир')
 <Comment: Comment object (9)>
->>> Comment.objects.create(post=Post.objects.get(id=6), user=Author.objects.get(id=3).user, comment_text='Все так')
+>>> Comment.objects.create(post=Post.objects.get(id=6), user=Author.objects.get(id=3).user, text='Все так')
 <Comment: Comment object (10)>
 
 создаем лайки к комментариям:
@@ -125,22 +125,22 @@ python manage.py shell
 обновляем рейтинги пользователей:
 >>> a = Author.objects.get(id=3)
 >>> a.update_rating()
->>> a.ratingAuthor
+>>> a.rating
 10
 >>> b = Author.objects.get(id=4)
 >>> b.update_rating()
->>> b.ratingAuthor
+>>> b.rating
 30
 
 Выводим лучшего пользователя применяя сортировку:
->>> a = Author.objects.order_by('-ratingAuthor')[:1]
+>>> a = Author.objects.order_by('-rating')[:1]
 >>> a
 <QuerySet [<Author: Петр>]>
 
 
 Выводим рейтинги и всех пользователей применяя цикл for:
 >>> for i in a:               
-...     i.ratingAuthor
+...     i.rating
 ...     i.user.username       
 ... 
 30
@@ -166,10 +166,10 @@ python manage.py shell
 
 Выводим дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи:
 >>> for i in bestPost: 
-...     i.post_pub_date
+...     i.created_at
 ...     i.authors.user
 ...     i.rating
-...     i.post_title
+...     i.title
 ...     i.preview()
 ... 
 datetime.datetime(2022, 10, 16, 12, 37, 48, 367012, tzinfo=datetime.timezone.utc)
@@ -180,10 +180,10 @@ datetime.datetime(2022, 10, 16, 12, 37, 48, 367012, tzinfo=datetime.timezone.utc
 
 Выводим дату добавления, username автора, рейтинг, текст комментариев к лучшей статье:
 >>> for k in bestPostCom:
-...     k.comment_pub_date
+...     k.created_at
 ...     k.user
 ...     k.rating
-...     k.comment_text
+...     k.text
 ... 
 datetime.datetime(2022, 10, 16, 12, 50, 48, 30794, tzinfo=datetime.timezone.utc)
 <User: Петр>

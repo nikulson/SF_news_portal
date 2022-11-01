@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+    {% for category in post.category.all%}
+        <button><a href="{% url 'subscribed' category.id%}"><u>Подписаться</u></a> </button>
+    {% endfor %}
+    <h1>{{ post.title | censor}}</h1>
+    <h1>{{ post.created_at | censor}}</h1>
+    <h1>{{ post.body | censor}}</h1>
+
+{% endblock content %}
