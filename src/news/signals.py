@@ -7,7 +7,7 @@ from .views import send_mail_for_subscribers
 
 
 @receiver(post_save, sender=Post)
-def send_sub_mail(instance):
+def send_sub_mail(sender, instance, **kwargs):
     print('Сигнал - начало')
     send_mail_for_subscribers(instance)
     print('Сигнал - конец')
