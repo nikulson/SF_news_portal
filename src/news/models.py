@@ -29,7 +29,7 @@ class Author(models.Model):
 class Category(models.Model):
     """"Категории новостей/статей — темы, которые они отражают"""
     name = models.CharField(max_length=200, unique=True, null=False)
-    subscribers = models.ManyToManyField(User)
+    subscribers = models.ManyToManyField(User, max_length=200, blank=True)
 
     def __str__(self):
         return f'{self.name}'

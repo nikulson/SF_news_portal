@@ -11,6 +11,7 @@ from .forms import PostForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.template.loader import render_to_string
 
 
 
@@ -142,5 +143,6 @@ def del_subscribe(request, **kwargs):
     print('Пользователь', request.user, 'удален из подписчиков категории:', Category.objects.get(pk=pk))
     Category.objects.get(pk=pk).subscribers.remove(request.user)
     return redirect('/news_list/')
+
 
 
