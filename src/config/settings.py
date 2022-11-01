@@ -167,6 +167,9 @@ EMAIL_USE_SSL = True
 SERVER_EMAIL = 'nikulshinsf@yandex.ru'
 DEFAULT_FROM_EMAIL = 'nikulshinsf@yandex.ru'
 
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
 
 
 SITE_ID = 1
