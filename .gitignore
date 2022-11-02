@@ -5,6 +5,9 @@
 
 db.sqlite3
 
+# Celery
+celery/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

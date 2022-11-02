@@ -17,19 +17,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJ_SECRET_KEY')
+SECRET_KEY = os.getenv('DJ_SECRET_KEY', default='zootie0phaegoongiephivuub5ooL3Aepheena6o')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -94,17 +94,38 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = 'src.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / '../db.sqlite3',
+        'NAME': os.path.join(PROJECT_ROOT_DIR, 'db.sqlite3'),
     }
 }
 
+
+CELERY = {
+    # 'BROKER_URL': 'filesystem://',
+    'BROKER_URL': 'redis://:{}@{}:{}/0'.format(
+        os.environ.get('REDIS_PASSWORD', ''),
+        os.environ.get('REDIS_HOST', 'localhost'),
+        os.environ.get('REDIS_PORT', 6379)
+    ),
+
+    # 'RESULT_BACKEND_URL': f'file://{PROJECT_ROOT_DIR}/celery/result',
+    'RESULT_BACKEND_URL': 'redis://:{}@{}:{}/1'.format(
+        os.environ.get('REDIS_PASSWORD', ''),
+        os.environ.get('REDIS_HOST', 'localhost'),
+        os.environ.get('REDIS_PORT', 6379)
+    ),
+
+    'BROKER_TRANSPORT_OPT': {
+        'data_folder_in': os.path.join(PROJECT_ROOT_DIR, 'celery/broker/out'),
+        'data_folder_out': os.path.join(PROJECT_ROOT_DIR, 'celery/broker/out'),
+        'data_folder_processed': os.path.join(PROJECT_ROOT_DIR, 'celery/broker/processed')
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -171,9 +192,8 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 
-
 SITE_ID = 1
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    os.path.join(BASE_DIR, 'static'),
 ]
