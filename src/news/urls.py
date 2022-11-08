@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from src.news.views import BaseView, PostsList, PostDetail, PostCreate, PostEditView, PostDeleteView, add_subscribe, del_subscribe
+from src.news.views import BaseView, PostsList, PostDetail, PostCreate, PostEditView, PostDeleteView, add_subscribe
 
 urlpatterns = [
     path('', PostsList.as_view()),
@@ -9,6 +9,5 @@ urlpatterns = [
     path('<int:pk>/edit/', PostEditView.as_view(), name='post_edit'),
     path('<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
     path('<int:pk>/add_subscribe/', add_subscribe, name='add_subscribe'),
-    path('<int:pk>/del_subscribe/', del_subscribe, name='del_subscribe'),
 
 ]

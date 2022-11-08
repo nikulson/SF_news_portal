@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_filters',
+    'django_apscheduler',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'src.news',
     'src.sign',
     'src.protect',
+    'src.appointments',
 ]
 
 MIDDLEWARE = [

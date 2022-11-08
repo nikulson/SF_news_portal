@@ -12,7 +12,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.template.loader import render_to_string
+from django.db.models.signals import post_save
 
+from .tasks import hello, send_mail_for_sub_once
 
 
 class BaseView(TemplateView):
@@ -21,32 +23,33 @@ class BaseView(TemplateView):
 
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить,
-        model = Post
+    model = Post
     # Поле, которое будет использоваться для сортировки объектов,
-        ordering = '-created_at'
+    ordering = '-created_at'
     # Указываем имя шаблона, в котором будут все инструкции о том,
     # как именно пользователю должны быть показаны наши объекты
-        template_name = 'news_list.html'
+    template_name = 'news_list.html'
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
-        context_object_name = 'posts_list'
-        paginate_by = 2
+    context_object_name = 'posts_list'
+    paginate_by = 2
 
-        def get_queryset(self):
-            queryset = super().get_queryset()
-            self.filterset = PostFilter(self.request.GET, queryset)
-            return self.filterset.qs
+    def get_queryset(self):
+        hello.delay()
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
 
-        def get_context_data(self, **kwargs):
-            context = super().get_context_data(**kwargs)
-            context['time_now'] = datetime.utcnow()
-            context['value1'] = None
-            context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
-            context['categories'] = Category.objects.all()
-            context['authors'] = Author.objects.all()
-            context['form'] = PostForm()
-            context['filterset'] = self.filterset
-            return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['time_now'] = datetime.utcnow()
+        context['value1'] = None
+        context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
+        context['categories'] = Category.objects.all()
+        context['authors'] = Author.objects.all()
+        context['form'] = PostForm()
+        context['filterset'] = self.filterset
+        return context
 
 
 class PostDetail(DetailView):
@@ -131,21 +134,13 @@ class ProtectedView(TemplateView):
 
 @login_required
 def add_subscribe(request, **kwargs):
-    pk = request.GET.get('pk', )
+    pk = kwargs.get('pk', )
     print('Пользователь', request.user, 'добавлен в подписчики категории:', Category.objects.get(pk=pk))
     Category.objects.get(pk=pk).subscribers.add(request.user)
     return redirect('/news_list/')
 
 
-@login_required
-def del_subscribe(request, **kwargs):
-    pk = request.GET.get('pk', )
-    print('Пользователь', request.user, 'удален из подписчиков категории:', Category.objects.get(pk=pk))
-    Category.objects.get(pk=pk).subscribers.remove(request.user)
-    return redirect('/news_list/')
-
-
-def send_mail_for_subscribers(instance):
+def send_mail_for_sub(instance):
     print('Представления - начало')
     print()
     print('====================ПРОВЕРКА СИГНАЛОВ===========================')
@@ -168,7 +163,6 @@ def send_mail_for_subscribers(instance):
     print()
     print()
     for subscriber in subscribers:
-
         print('**********************', subscriber.email, '**********************')
         print(subscriber)
         print('Адресат:', subscriber.email)
@@ -176,10 +170,13 @@ def send_mail_for_subscribers(instance):
         html_content = render_to_string(
             'mail.html', {'user': subscriber, 'text': sub_text[:50], 'post': instance})
 
+        sub_username = subscriber.username
+        sub_useremail = subscriber.email
 
         print()
         print(html_content)
         print()
 
-    return redirect('/news_list/')
+        send_mail_for_sub_once.delay(sub_username, sub_useremail, html_content)
 
+    return redirect('/news_list/')

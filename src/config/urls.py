@@ -23,4 +23,4 @@ urlpatterns = [
     path('', include('src.protect.urls')),
     path('sign/', include('src.sign.urls')),
     path('accounts/', include('allauth.urls')),
-]
+    ]
