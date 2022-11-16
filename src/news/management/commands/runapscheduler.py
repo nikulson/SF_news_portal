@@ -1,4 +1,4 @@
-import logging
+
 
 from django.conf import settings
 
@@ -14,7 +14,7 @@ from src.news.signals import week_post_2
 
 # from NewsPortal.NewsPaper.models import Post
 
-logger = logging.getLogger(__name__)
+
 
 
 def my_job():

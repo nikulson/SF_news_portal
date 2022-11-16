@@ -15,6 +15,9 @@ from django.template.loader import render_to_string
 from django.db.models.signals import post_save
 
 from .tasks import hello, send_mail_for_sub_once
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseView(TemplateView):

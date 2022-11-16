@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +31,6 @@ SECRET_KEY = os.getenv('DJ_SECRET_KEY', default='zootie0phaegoongiephivuub5ooL3A
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -76,7 +76,6 @@ AUTHENTICATION_BACKENDS = [
 
 ROOT_URLCONF = 'src.config.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -105,7 +104,6 @@ DATABASES = {
         'NAME': os.path.join(PROJECT_ROOT_DIR, 'db.sqlite3'),
     }
 }
-
 
 CELERY = {
     # 'BROKER_URL': 'filesystem://',
@@ -147,7 +145,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -158,7 +155,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -180,7 +176,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
-
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'nikulshinsf'
@@ -193,9 +188,107 @@ DEFAULT_FROM_EMAIL = 'nikulshinsf@yandex.ru'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
-
 SITE_ID = 1
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style': '{',
+    'formatters': {
+        'debug': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+        'warning': {
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
+        },
+        'error_critical': {
+            'format': '%(levelname)s %(asctime)s %(message)s %(exc_info)s'
+        },
+        'general_security_log': {
+            'format': '%(levelname)s %(asctime)s %(message)s %(midule)s %(exc_info)s'
+        },
+        'mail': {
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
+        },
+
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug'
+        },
+        'console_warning': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning'
+        },
+        'error_critical_log': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'error_critical',
+            'filename': 'errors.log'
+        },
+        'general_log': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'general_security_log',
+            'filename': 'general.log'
+        },
+        'security_log': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'general_security_log',
+            'filename': 'security.log'
+        },
+
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
+            'formatter': 'mail'
+
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'console_warning', 'general_log'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'error_critical_log'],
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['error_critical_log', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['error_critical_log'],
+            'propagate': True,
+        },
+        'django.db_backends': {
+            'handlers': ['error_critical_log'],
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['general_security_log'],
+            'propagate': True,
+        }
+    }
+}
